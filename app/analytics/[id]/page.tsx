@@ -1,9 +1,24 @@
 "use client";
 import Image from "next/image";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 
 const Analytics = () => {
   let { id } = useParams();
+  const searchParams = useSearchParams();
+
+  const data = JSON.parse(searchParams.get("data") ?? "");
+
+  const { avgLikes, avgComments } = (data["post_info"] as any[]).reduce(
+    (acc, post, _, { length }: any) => ({
+      avgLikes: acc.avgLikes + convertInstagramNumber(post.like_count)  / length,
+      avgComments: acc.avgComments + convertInstagramNumber(post.comment_count) / length,
+    }),
+    { avgLikes: 0, avgComments: 0 }
+  );
+  const enageRate = (avgLikes + avgComments)/ convertInstagramNumber(data['follower_count']);
+  console.log("data :", data, avgComments, avgLikes);
+  useEffect(() => {}, [searchParams]);
 
   return (
     <div className="flex items-center justify-center bg-[url('/bg_image/bg1.png')] w-screen h-screen bg-no-repeat bg-fixed bg-cover">
@@ -24,8 +39,12 @@ const Analytics = () => {
           </div>
           <div>
             <div className="flex gap-4 justify-between bg-gray/50 border p-2 rounded-md">
-              <div className="text-lg font-bold">Posts : 2,043</div>
-              <div className="text-lg font-bold">Followers : 50K</div>
+              <div className="text-lg font-bold">
+                Posts : {data["post_count"]}
+              </div>
+              <div className="text-lg font-bold">
+                Followers : {data["follower_count"]}
+              </div>
             </div>
             <div className="flex flex-col gap-4 px-6 py-6">
               <div className="flex justify-between">
@@ -35,7 +54,7 @@ const Analytics = () => {
                   height={30}
                   alt="average likes"
                 />
-                <div className="font-bold">2000</div>
+                <div className="font-bold">{Number(avgLikes.toFixed(1))}</div>
               </div>
               <div className="flex justify-between">
                 <Image
@@ -44,7 +63,7 @@ const Analytics = () => {
                   height={30}
                   alt="average comments"
                 />
-                <div className="font-bold">2000</div>
+                <div className="font-bold">{Number(avgComments.toFixed(1))}</div>
               </div>
             </div>
             <div className="border-b-[1px] border-b-black mb-4" />
@@ -52,7 +71,7 @@ const Analytics = () => {
               <div className="flex justify-between items-end">
                 <div className="font-bold">Engagement Rate</div>
                 <div className="text-2xl font-black text-red-400">
-                  {"0.02%"}
+                 {Number(enageRate.toFixed(1))}
                 </div>
               </div>
               <div className="flex justify-between items-end">
