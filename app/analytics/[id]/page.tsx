@@ -1,4 +1,6 @@
 "use client";
+import convertInstagramNumber from "@/app/utils/convertInstgramNumber";
+import formatNumber from "@/app/utils/formateNumber";
 import Image from "next/image";
 import { useParams, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
@@ -10,14 +12,36 @@ const Analytics = () => {
   const data = JSON.parse(searchParams.get("data") ?? "");
 
   const { avgLikes, avgComments } = (data["post_info"] as any[]).reduce(
-    (acc, post, _, { length }: any) => ({
-      avgLikes: acc.avgLikes + convertInstagramNumber(post.like_count)  / length,
-      avgComments: acc.avgComments + convertInstagramNumber(post.comment_count) / length,
-    }),
+    (acc, post, _, { length }: any) => {
+      console.log(
+        "l :",
+        post.like_count,
+        convertInstagramNumber(post.like_count),
+        post.comment_count,
+        convertInstagramNumber(post.comment_count)
+      );
+
+      return {
+        avgLikes:
+          acc.avgLikes + convertInstagramNumber(post.like_count) / length,
+        avgComments:
+          acc.avgComments + convertInstagramNumber(post.comment_count) / length,
+      };
+    },
     { avgLikes: 0, avgComments: 0 }
   );
-  const enageRate = (avgLikes + avgComments)/ convertInstagramNumber(data['follower_count']);
-  console.log("data :", data, avgComments, avgLikes);
+  const enageRate =
+    ((avgLikes + avgComments) /
+      convertInstagramNumber(data["follower_count"])) *
+    100;
+  console.log(
+    "data :",
+    data,
+    avgComments,
+    avgLikes,
+    convertInstagramNumber(data["follower_count"]),
+    enageRate
+  );
   useEffect(() => {}, [searchParams]);
 
   return (
@@ -29,7 +53,7 @@ const Analytics = () => {
         <div className="flex flex-col sm:flex-row gap-8 py-4 ">
           <div className="flex flex-col gap-4 items-center justify-center">
             <Image
-              src="https://instagram.fpnq7-6.fna.fbcdn.net/v/t51.2885-19/339863318_798083651202064_3322120079269210626_n.jpg?stp=dst-jpg_s320x320&_nc_ht=instagram.fpnq7-6.fna.fbcdn.net&_nc_cat=104&_nc_ohc=Rc_sMqEgi6IQ7kNvgENcgUR&edm=AOQ1c0wBAAAA&ccb=7-5&oh=00_AYD4U3SLXY_4fhwhzz2qc6u-1e2LuxFZ4VFJuTvHboGq6A&oe=66A57156&_nc_sid=8b3546"
+              src={data["profile_pic"]}
               width={150}
               height={150}
               className="rounded-full"
@@ -54,7 +78,9 @@ const Analytics = () => {
                   height={30}
                   alt="average likes"
                 />
-                <div className="font-bold">{Number(avgLikes.toFixed(1))}</div>
+                <div className="font-bold">
+                  {formatNumber(Number(avgLikes.toFixed(1)))}
+                </div>
               </div>
               <div className="flex justify-between">
                 <Image
@@ -63,7 +89,9 @@ const Analytics = () => {
                   height={30}
                   alt="average comments"
                 />
-                <div className="font-bold">{Number(avgComments.toFixed(1))}</div>
+                <div className="font-bold">
+                  {formatNumber(Number(avgComments.toFixed(1)))}
+                </div>
               </div>
             </div>
             <div className="border-b-[1px] border-b-black mb-4" />
@@ -71,7 +99,7 @@ const Analytics = () => {
               <div className="flex justify-between items-end">
                 <div className="font-bold">Engagement Rate</div>
                 <div className="text-2xl font-black text-red-400">
-                 {Number(enageRate.toFixed(1))}
+                  {Number(enageRate.toFixed(1))}%
                 </div>
               </div>
               <div className="flex justify-between items-end">

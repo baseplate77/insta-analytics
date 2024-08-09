@@ -7,6 +7,7 @@ import { client } from "./utils/axios";
 import { useRouter } from "next/navigation";
 import { ClipLoader, FadeLoader, MoonLoader } from "react-spinners";
 import { Loader2 } from "lucide-react";
+import { profile } from "console";
 
 export default function Home() {
   const [username, setUsername] = useState("");
@@ -21,14 +22,15 @@ export default function Home() {
 
     let data = res.data;
 
+    data['profile_pic'] = encodeURIComponent(data['profile_pic'] ?? "")
     if (data.success) {
       router.push(`/analytics/${username}?data=${JSON.stringify(data)}`);
     } else {
       console.log("error in getting the analytics :", res);
     }
+    console.log("data :", res.data);
 
     setLoading(false);
-    console.log("data :", res.data);
   };
 
   return (
