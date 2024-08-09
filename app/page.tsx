@@ -5,7 +5,8 @@ import Image from "next/image";
 import { useState } from "react";
 import { client } from "./utils/axios";
 import { useRouter } from "next/navigation";
-import { ClipLoader, FadeLoader } from "react-spinners";
+import { ClipLoader, FadeLoader, MoonLoader } from "react-spinners";
+import { Loader2 } from "lucide-react";
 
 export default function Home() {
   const [username, setUsername] = useState("");
@@ -14,6 +15,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const getProfileDetail = async () => {
     console.log("username :", username);
+    if (username === "") return;
     setLoading(true);
     let res = await client(`/get-profile-details?username=${username}`);
 
@@ -43,7 +45,7 @@ export default function Home() {
           </div>
         </div>
         <div className="flex justify-center items-center w-full pt-16">
-          <div className="bg-white/50 p-3 pl-8 rounded-full flex items-center justify-center w-[50%] h-min min-w-[280px] backdrop-blur-lg">
+          <div className=" bg-white/50 p-3 pl-8 rounded-full flex items-center justify-center w-[50%] h-min min-w-[280px] backdrop-blur-lg">
             <input
               placeholder="Enter username"
               value={username}
@@ -53,25 +55,12 @@ export default function Home() {
               className="focus:outline-none w-full bg-transparent placeholder-black text-xl font-medium"
             />
             {loading ? (
-              <FadeLoader
-                // color={}
-                width={5}
-                height={10}
-                radius={5}
-                loading={loading}
-                cssOverride={{
-                  margin:"4px",
-                  width:50,
-                  height:50,
-                }}
-                // size={150}
-                aria-label="Loading Spinner"
-                data-testid="loader"
-              />
+              <Loader2 className="mr-2 w-10 h-10 animate-spin" />
             ) : (
               <Button
                 variant="outline"
                 onClick={getProfileDetail}
+                disabled={loading}
                 className="flex items-center gap-2 border border-black/80 text-black/70 px-2 py-1 rounded-full bg-transparent hover:bg-white/30"
               >
                 <svg
