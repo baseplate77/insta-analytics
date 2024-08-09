@@ -1,5 +1,6 @@
-function convertInstagramNumber(str: string) {
+function convertInstagramNumber(str?: string) {
   // Remove commas for thousands separators
+  if (str === undefined) return 0;
   str = str.replace(/,/g, "");
 
   // Check for million (m) and thousand (k) suffixes

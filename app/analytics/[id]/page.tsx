@@ -9,17 +9,14 @@ const Analytics = () => {
   let { id } = useParams();
   const searchParams = useSearchParams();
 
-  const data = JSON.parse(searchParams.get("data") ?? "");
+  let d = searchParams.get("data") as string ;
+  console.log("ddd :",d);
+  
+  const data = JSON.parse(d === "" || d === undefined ? "{}" : d);
 
-  const { avgLikes, avgComments } = (data["post_info"] as any[]).reduce(
+  const { avgLikes, avgComments } = data["post_info"] !== undefined && data['post_info'].length !==0  ? (data["post_info"] as any[]).reduce(
     (acc, post, _, { length }: any) => {
-      console.log(
-        "l :",
-        post.like_count,
-        convertInstagramNumber(post.like_count),
-        post.comment_count,
-        convertInstagramNumber(post.comment_count)
-      );
+   
 
       return {
         avgLikes:
@@ -29,7 +26,7 @@ const Analytics = () => {
       };
     },
     { avgLikes: 0, avgComments: 0 }
-  );
+  ) :   { avgLikes: 0, avgComments: 0 };
   const enageRate =
     ((avgLikes + avgComments) /
       convertInstagramNumber(data["follower_count"])) *
@@ -96,13 +93,13 @@ const Analytics = () => {
             </div>
             <div className="border-b-[1px] border-b-black mb-4" />
             <div className="flex flex-col gap-2">
-              <div className="flex justify-between items-end">
+              <div className="flex justify-between items-end gap-2">
                 <div className="font-bold">Engagement Rate</div>
                 <div className="text-2xl font-black text-red-400">
                   {Number(enageRate.toFixed(1))}%
                 </div>
               </div>
-              <div className="flex justify-between items-end">
+              <div className="flex justify-between items-end gap-2">
                 <div className="font-bold">status</div>
                 <div className="font-black text-2xl text-red-400">{"Low"}</div>
               </div>
